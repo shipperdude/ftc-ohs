@@ -3,6 +3,36 @@
 
 
 
+ void sub_LiftToHeight(int height)
+{
+	// Version 1 ("Theoretical Form")
+	//int Kp = 1;
+	//int Ki = 1;
+	//int pastError = 0;
+	//int presentError = 0;
+	//int previousTime = 0;
+	//int dTime = 0;
+	//dTime = Time[1]-previousTime;
+	//previousTime += dTime;
+	//presentError = height-Motor_GetEncoder(motor_lift);
+	//pastError += dTime*presentError;
+	//power_lift = Kp*presentError;
+
+	//// Version 2 ("Standard Form")
+	//int Kp = 1;
+	//int Ti = 1;
+	//int pastError = 0;
+	//int presentError = 0;
+	//int previousTime = 0;
+	//int dTime = 0;
+	//dTime = Time[1]-previousTime;
+	//previousTime += dTime;
+	//presentValue = Motor_GetEncoder(motor_lift);
+	//pastError += dTime*presentError;
+	//power_lift = Kp*(presentValue+pastError/Ti);
+}
+
+
 void sub_PutRingOn()
 {
 	Move_Forward(g_PutRingOnTime, g_FullDrivePower);
@@ -10,226 +40,74 @@ void sub_PutRingOn()
 }
 
 
-task sub_TakeRingOff()
+void sub_TakeRingOff()
 {
-	//do stuff
-	EndTimeSlice();
+	Lift_Up(20, g_AccurateMotorPower);
 }
-
-
-//// Might add a fine-tune section to this.
-//task sub_LiftToTop()
-//{
-//	//Motor_Target(motor_lift, g_TopLiftAngle);
-//	for (int i = 0; i < 2; i++)
-//	{
-//		if ( Motor_GetEncoder(motor_lift)>g_TopLiftAngle )
-//		{
-//			Motor_SetPower(motor_lift, (-1)*g_FullDrivePower);
-//			while ( Motor_GetEncoder(motor_lift) > g_TopLiftAngle)
-//			{
-//				Time_Wait(10);
-//				EndTimeSlice();
-//			}
-//		}
-//		if ( Motor_GetEncoder(motor_lift)<g_TopLiftAngle )
-//		{
-//			Motor_SetPower(motor_lift, g_FullDrivePower);
-//			while ( Motor_GetEncoder(motor_lift) < g_TopLiftAngle)
-//			{
-//				Time_Wait(10);
-//				EndTimeSlice();
-//			}
-//		}
-//		Motor_Stop(motor_lift);
-//	}
-//	StopTask(sub_LiftToTop);
-//}
-
-
-//task sub_LiftToMiddle()
-//{
-//	//Motor_Target(motor_lift, g_MiddleLiftAngle);
-//	for (int i = 0; i < 2; i++)
-//	{
-//		if ( Motor_GetEncoder(motor_lift)>g_MiddleLiftAngle )
-//		{
-//			Motor_SetPower(motor_lift, -1*g_FullDrivePower);
-//			while ( Motor_GetEncoder(motor_lift) > g_MiddleLiftAngle)
-//			{
-//				Time_Wait(10);
-//				EndTimeSlice();
-//			}
-//		}
-//		if ( Motor_GetEncoder(motor_lift)<g_MiddleLiftAngle )
-//		{
-//			Motor_SetPower(motor_lift, g_FullDrivePower);
-//			while ( Motor_GetEncoder(motor_lift) < g_MiddleLiftAngle)
-//			{
-//				Time_Wait(10);
-//				EndTimeSlice();
-//			}
-//		}
-//		Motor_Stop(motor_lift);
-//	}
-//	StopTask(sub_LiftToMiddle);
-//}
-
-
-//// Might add a fine-tune section to this.
-//task sub_LiftToBottom()
-//{
-//	//Motor_Target(motor_lift, g_BottomLiftAngle);
-//	for (int i = 0; i < 2; i++)
-//	{
-//		if ( Motor_GetEncoder(motor_lift)>g_BottomLiftAngle )
-//		{
-//			Motor_SetPower(motor_lift, -1*g_FullDrivePower);
-//			while ( Motor_GetEncoder(motor_lift) > g_BottomLiftAngle)
-//			{
-//				Time_Wait(10);
-//				EndTimeSlice();
-//			}
-//		}
-//		if ( Motor_GetEncoder(motor_lift)<g_BottomLiftAngle )
-//		{
-//			Motor_SetPower(motor_lift, g_FullDrivePower);
-//			while ( Motor_GetEncoder(motor_lift) < g_BottomLiftAngle)
-//			{
-//				Time_Wait(10);
-//				EndTimeSlice();
-//			}
-//		}
-//		Motor_Stop(motor_lift);
-//	}
-//	StopTask(sub_LiftToBottom);
-//}
-
-
-task sub_WeighRings()
-{
-	// We might not implement this at all. Heh.
-	EndTimeSlice();
-}
-
-
-task sub_MOO()
-{
-	PlaySoundFile("moo.rso");
-
-	// Uncomment this next section if "moo.rso" won't play.
-	while (bSoundActive)
-	{
-		Time_Wait(10);
-		Joystick_UpdateData();
-		EndTimeSlice();
-	}
-
-	StopTask(sub_MOO);
-}
-
-
-
-//-----------------------------------------------------------
-void sub_LiftToBottom()
-{
-	if (isLiftState == LIFT_BOTTOM)
-	{
-		if ( abs(g_BottomLiftAngle-Motor_GetEncoder(motor_lift)) > g_LiftAccuracyRough )
-		{
-			if ( Motor_GetEncoder(motor_lift)>g_BottomLiftAngle )
-			{
-				powerLift = -100;
-				//powerLift = (-1) * g_FullLiftPower;
-			}
-			if ( Motor_GetEncoder(motor_lift)<g_BottomLiftAngle )
-			{
-				powerLift = 100;
-				//powerLift = g_FullLiftPower;
-			}
-		}
-		if ( abs(g_BottomLiftAngle-Motor_GetEncoder(motor_lift)) > g_LiftAccuracyFine )
-		{
-			if ( Motor_GetEncoder(motor_lift)>g_BottomLiftAngle )
-			{
-				powerLift = -20;
-				//powerLift = (-1) * g_FullLiftPower / g_FineTuneFactor;
-			}
-			if ( Motor_GetEncoder(motor_lift)<g_BottomLiftAngle )
-			{
-				powerLift = 20;
-				//powerLift = g_FullLiftPower / g_FineTuneFactor;
-			}
-		}
-	}
-}
-
-
-void sub_LiftToMiddle()
-{
-	if (isLiftState == LIFT_MIDDLE)
-	{
-		if ( abs(g_MiddleLiftAngle-Motor_GetEncoder(motor_lift)) > g_LiftAccuracyRough )
-		{
-			if ( Motor_GetEncoder(motor_lift)>g_MiddleLiftAngle )
-			{
-				powerLift = (-1) * g_FullLiftPower;
-			}
-			if ( Motor_GetEncoder(motor_lift)<g_MiddleLiftAngle )
-			{
-				powerLift = g_FullLiftPower;
-			}
-		}
-		if ( abs(g_MiddleLiftAngle-Motor_GetEncoder(motor_lift)) > g_LiftAccuracyFine )
-		{
-			if ( Motor_GetEncoder(motor_lift)>g_MiddleLiftAngle )
-			{
-				powerLift = (-1) * g_FullLiftPower / g_FineTuneFactor;
-			}
-			if ( Motor_GetEncoder(motor_lift)<g_MiddleLiftAngle )
-			{
-				powerLift = g_FullLiftPower / g_FineTuneFactor;
-			}
-		}
-	}
-}
-
-
-void sub_LiftToTop()
-{
-	if (isLiftState == LIFT_TOP)
-	{
-		if ( abs(g_TopLiftAngle-Motor_GetEncoder(motor_lift)) > g_LiftAccuracyRough )
-		{
-			if ( Motor_GetEncoder(motor_lift)>g_TopLiftAngle )
-			{
-				powerLift = (-1) * g_FullLiftPower;
-			}
-			if ( Motor_GetEncoder(motor_lift)<g_TopLiftAngle )
-			{
-				powerLift = g_FullLiftPower;
-			}
-		}
-		if ( abs(g_TopLiftAngle-Motor_GetEncoder(motor_lift)) > g_LiftAccuracyFine )
-		{
-			if ( Motor_GetEncoder(motor_lift)>g_TopLiftAngle )
-			{
-				powerLift = (-1) * g_FullLiftPower / g_FineTuneFactor;
-			}
-			if ( Motor_GetEncoder(motor_lift)<g_TopLiftAngle )
-			{
-				powerLift = g_FullLiftPower / g_FineTuneFactor;
-			}
-		}
-	}
-}
-//-------------------------------------------------------------------------------
-
 
 
 void sub_CowsWithGuns()
 {
+	PlayTone(NOTE_A3, 19);		Time_Wait(20);
+	PlayTone(NOTE_A3, 19);		Time_Wait(20);
+
+	PlayTone(NOTE_F4, 39);		Time_Wait(40);
+	PlayTone(NOTE_F4, 78);		Time_Wait(80);
+	PlayTone(NOTE_G4, 19);		Time_Wait(20);
+	PlayTone(NOTE_F4, 19);		Time_Wait(20);
+
+	PlayTone(NOTE_E4, 39);		Time_Wait(40);
+	PlayTone(NOTE_C4, 78);		Time_Wait(80);
+	PlayTone(NOTE_D4, 39);		Time_Wait(40);
+
+	PlayTone(NOTE_E4, 59);		Time_Wait(60);
+	PlayTone(NOTE_G3s, 19);		Time_Wait(20);
+	PlayTone(NOTE_G3s, 39);		Time_Wait(40);
+	PlayTone(NOTE_G3s, 39);		Time_Wait(40);
+
+	PlayTone(NOTE_A3, 117);		Time_Wait(120);
+
+
+	PlayTone(NOTE_A3, 19);		Time_Wait(20);
+	PlayTone(NOTE_A3, 19);		Time_Wait(20);
+
+	PlayTone(NOTE_F4, 39);		Time_Wait(40);
+	PlayTone(NOTE_F4, 78);		Time_Wait(80);
+	PlayTone(NOTE_G4, 19);		Time_Wait(20);
+	PlayTone(NOTE_F4, 19);		Time_Wait(20);
+
+	PlayTone(NOTE_E4, 19);		Time_Wait(20);
+	PlayTone(NOTE_D4, 19);		Time_Wait(20);
+	PlayTone(NOTE_C4, 78);		Time_Wait(80);
+	PlayTone(NOTE_D4, 39);		Time_Wait(40);
+
+	PlayTone(NOTE_E4, 78);		Time_Wait(80);
+	PlayTone(NOTE_G4s, 78);		Time_Wait(80);
+
+	PlayTone(NOTE_B4, 78); 		Time_Wait(80);
+	PlayTone(NOTE_REST, 39);	Time_Wait(40);
+	PlayTone(NOTE_G3s, 19);		Time_Wait(20);
+	PlayTone(NOTE_G3s, 19);		Time_Wait(20);
+
+	PlayTone(NOTE_A3, 39);		Time_Wait(40);
 }
+
+
+//// We aren't using this function at all--therefore, it is commented out.
+//task sub_MOO()
+//{
+//	PlaySoundFile("moo.rso");
+//
+//	// Uncomment this next section if "moo.rso" won't play.
+//	while (bSoundActive)
+//	{
+//		Time_Wait(10);
+//		Joystick_UpdateData();
+//		EndTimeSlice();
+//	}
+//
+//	StopTask(sub_MOO);
+//}
 
 
 
